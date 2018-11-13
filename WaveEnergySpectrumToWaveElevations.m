@@ -51,7 +51,7 @@ randomPhaseAngle = rand(1, numBins) * (2*pi) ;
 
 % Wave elevation according to discrete angular frequncdy
 % waveElevation:  across row: anglularFrequencyIndex, across column: timeStep
-timeMax = 30 ;
+timeMax = 60 ;
 timeStep = 0:0.01:timeMax ;
 for angularFrequencyIndex = 1:length(angularFrequencyDiscrete)
     componentWaveElevation(:, angularFrequencyIndex) =...
@@ -115,4 +115,5 @@ xlabel('t (sec)') ; ylabel('\eta(t) (m)') ;
 title('Wave elevation') ;
 grid on ;
 saveas(waveElevationFig, 'WaveElevation.png') ;
-save('waveElevation_Bins500_RandSeed2.mat', 'waveElevation') ;
+save('waveElevation_Bins500_RandSeed2.mat', 'waveElevation') ;   
+save('timeStep.mat', 'timeStep')
