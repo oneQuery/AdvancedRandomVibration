@@ -33,7 +33,7 @@ saveas(waveEnergySpectrumFig, 'WaveEnergySpectrumISSC.png') ;
 %  5. random phase anlge according to discrete angular frequency
 
 % the number of bins to devide the angular frequency domain for discrete anular frequnecy
-numBins = 50 ;      
+numBins = 500 ;      
 
 % 1. discrete angular wave frequency
 angularFrequencyDiscrete = linspace(0, angularFrequencyMax, numBins) ;
@@ -45,59 +45,74 @@ waveEnergySpectrumDiscrete = interp1(angularFrequency, waveEnergySpectrum, angul
 angularFreqeuncyInterval = angularFrequencyMax / numBins ;
 
 % 4. Random phase angle according to discrete angular frequency
-phaseAngleRandSeed = 1 ;
+phaseAngleRandSeed = 2 ;
 rng(phaseAngleRandSeed) ;
 randomPhaseAngle = rand(1, numBins) * (2*pi) ;
 
 % Wave elevation according to discrete angular frequncdy
-% waveElevation across row: anglularFrequencyIndex, across column: timeStep
+% waveElevation:  across row: anglularFrequencyIndex, across column: timeStep
 timeMax = 30 ;
 timeStep = 0:0.01:timeMax ;
 for angularFrequencyIndex = 1:length(angularFrequencyDiscrete)
-    waveElevation(:, angularFrequencyIndex) =...
+    componentWaveElevation(:, angularFrequencyIndex) =...
         sqrt(2 * waveEnergySpectrumDiscrete(angularFrequencyIndex) * angularFreqeuncyInterval)...
         * cos(angularFrequencyDiscrete(angularFrequencyIndex) * timeStep...
         + randomPhaseAngle(angularFrequencyIndex)) ;
 end
 
 
-%% Visualization of the wave elevation according to discrete angular wave frequncy
-numSubplotInOneFig = 15 ;
-numFig = ceil(numBins / numSubplotInOneFig) ;
-numSubplotColumn = 3 ;
-numSubplotRow = ceil(numSubplotInOneFig / numSubplotColumn) ;
-angularFrequencyIndex = 0 ;     
+%% Visualization of the component wave(each regular wave) elevation according to discrete angular wave frequncy
+showsComponentWaveElevation = false ;
 
-for figIndex = 1:numFig
-    waveElevationFig(figIndex) = figure ;
-    figure(waveElevationFig(figIndex)) ;
-    set(waveElevationFig(figIndex), 'position', [0 0 (numSubplotColumn * 300) (numSubplotRow * 150)]) ;
-    tempAngularFrequencyIndexHistory = [] ;     % reset the angular frequency index history
-    
-    for subplotCount = 1:numSubplotInOneFig
-        angularFrequencyIndex = angularFrequencyIndex + 1 ;
-        if angularFrequencyIndex > numBins
-            break
+if showsComponentWaveElevation
+    numSubplotInOneFig = 24 ;
+    numFig = ceil(numBins / numSubplotInOneFig) ;
+    numSubplotColumn = 3 ;
+    numSubplotRow = ceil(numSubplotInOneFig / numSubplotColumn) ;
+    angularFrequencyIndex = 0 ;     
+
+    for figIndex = 1:numFig
+        componentWaveElevationFig(figIndex) = figure ;
+        figure(componentWaveElevationFig(figIndex)) ;
+        set(componentWaveElevationFig(figIndex), 'position', [0 0 (numSubplotColumn * 150 * 1.4) (numSubplotRow * 100 * 1.2)]) ;
+        tempAngularFrequencyIndexHistory = [] ;     % reset the angular frequency index history
+
+        for subplotCount = 1:numSubplotInOneFig
+            angularFrequencyIndex = angularFrequencyIndex + 1 ;
+            if angularFrequencyIndex > numBins
+                break
+            end
+            tempAngularFrequencyIndexHistory(subplotCount) = angularFrequencyIndex ;    % Save angular frequency index history for subgroup title
+
+            subplot(numSubplotRow, numSubplotColumn, subplotCount) ;
+            plot(timeStep, componentWaveElevation(:, angularFrequencyIndex)) ;
+            axis([0 timeMax -max(max(componentWaveElevation)) max(max(componentWaveElevation))]) ;
+            xlabel('t (sec)') ; ylabel('\eta(t) (m)') ;
+            title(['\omega_{', num2str(angularFrequencyIndex), '}']) ;
+            grid on ;
         end
-        tempAngularFrequencyIndexHistory(subplotCount) = angularFrequencyIndex ;    % Save angular frequency index history for subgroup title
-        
-        subplot(numSubplotRow, numSubplotColumn, subplotCount) ;
-        plot(timeStep, waveElevation(:, angularFrequencyIndex)) ;
-        axis([0 timeMax -max(max(waveElevation)) max(max(waveElevation))]) ;
-        xlabel('t (sec)') ; ylabel('\eta(t) (m)') ;
-        title(['\omega_{', num2str(angularFrequencyIndex), '}']) ;
-        grid on ;
+
+        sgtitle(['Time singal of wave elevation for \omega_{',...
+            num2str(min(tempAngularFrequencyIndexHistory)), '} _- _{',...
+            num2str(max(tempAngularFrequencyIndexHistory)), '}']) ;
+
+        componentWavefigSaveName = sprintf('WaveElevation%d_%d.png',...
+            min(tempAngularFrequencyIndexHistory),...
+            max(tempAngularFrequencyIndexHistory)) ;
+
+        saveas(componentWaveElevationFig(figIndex), componentWavefigSaveName) ;
     end
-
-    sgtitle(['Time singal of wave elevation for \omega_{',...
-        num2str(min(tempAngularFrequencyIndexHistory)), '} _- _{',...
-        num2str(max(tempAngularFrequencyIndexHistory)), '}']) ;
-    
-    figSaveName = sprintf('waveElevation%d_%d.png',...
-        min(tempAngularFrequencyIndexHistory),...
-        max(tempAngularFrequencyIndexHistory)) ;
-    
-    saveas(waveElevationFig(figIndex), figSaveName) ;
-
 end
 
+%% Visualization of the irregular wave(sum of each regular wave) elevation
+componentWaveElevation = fillmissing(componentWaveElevation, 'constant', 0) ;
+waveElevation = sum(componentWaveElevation, 2) ;
+
+waveElevationFig = figure ;
+plot(timeStep, waveElevation) ;
+axis([0 timeMax -15 15]) ;
+xlabel('t (sec)') ; ylabel('\eta(t) (m)') ;
+title('Wave elevation') ;
+grid on ;
+saveas(waveElevationFig, 'WaveElevation.png') ;
+save('waveElevation_Bins500_RandSeed2.mat', 'waveElevation') ;
