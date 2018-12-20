@@ -189,7 +189,11 @@ end
 
 %% In time domain
 timeStepInterval = 0.1 ;
+<<<<<<< HEAD
 maxTime = 1000 ;
+=======
+maxTime = 10000 ;
+>>>>>>> refs/remotes/origin/master
 timeSteps = 0:timeStepInterval:maxTime ;
 %% Inpulse response
 cylinderNaturalFrequency = sqrt(pipeElasticModulus / cylinderMass) ;
@@ -226,7 +230,11 @@ for waveSpectrumIndex = 1:height(waveScatterDiagram)
     plot(timeSteps, heaveForceInTimeDomain(waveSpectrumIndex, :));
     set(gca, 'FontSize', 16) ;
     grid on;
+<<<<<<< HEAD
     ylim([-5E+6 5E+6]) ;
+=======
+    ylim([-6000 6000]) ;
+>>>>>>> refs/remotes/origin/master
     title(['H_1_/_3=' num2str(significantWaveHeightList(waveSpectrumIndex))...
         'm, T_m_e_a_n=' num2str(meanWavePeriodList(waveSpectrumIndex)) 'sec']) ;
     xlabel('t(sec)', 'fontsize', 16) ;
@@ -250,7 +258,11 @@ for waveSpectrumIndex = 1:height(waveScatterDiagram)
     plot(timeSteps, stressInTimeDomain(waveSpectrumIndex, 1:length(timeSteps)));
     set(gca, 'FontSize', 16) ;
     grid on;
+<<<<<<< HEAD
     ylim([-5E+6 5E+6]) ;
+=======
+    ylim([-30 30]) ;
+>>>>>>> refs/remotes/origin/master
     title(['H_1_/_3=' num2str(significantWaveHeightList(waveSpectrumIndex))...
         'm, T_m_e_a_n=' num2str(meanWavePeriodList(waveSpectrumIndex)) 'sec']) ;
     xlabel('t(sec)', 'fontsize', 16) ;
@@ -258,6 +270,7 @@ for waveSpectrumIndex = 1:height(waveScatterDiagram)
 end
 saveas(gcf, 'stressInTimeDomain.png') ;
 close ;
+<<<<<<< HEAD
 
 %% Occurrence
 rf = cell(height(waveScatterDiagram), 1) ;
@@ -281,3 +294,5 @@ end
 % end
 % saveas(gcf, 'stressInTimeDomain.png') ;
 % close ;
+=======
+>>>>>>> refs/remotes/origin/master
